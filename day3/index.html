@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Character Encoding -->
+    <meta charset="UTF-8">
+
+    <!-- Responsive Design -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Page Title -->
+    <title>day3</title>
+
+    <!-- CSS File -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Favicon (Optional) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <!-- <link rel="icon" href="favicon.ico"> -->
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <h1>student management with api usage</h1>
+    </header>
+    <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-graduation-cap"></i>
+                    <h1>ProStudent</h1>
+                </div>
+               
+            </div>
+        </header>
+         <!-- Stats Section -->
+        <section class="stats-section">
+            <div class="stat-card">
+                <div class="stat-icon blue">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-content">
+                    <span class="stat-label">Total Students</span>
+                    <h3 id="totalStudents ">0</h3>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon purple">
+                    <i class="fas fa-building"></i>
+                </div>
+                <div class="stat-content">
+                    <span class="stat-label">Departments</span>
+                    <h3 id="totalDepts">0</h3>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon green">
+                    <i class="fas fa-birthday-cake"></i>
+                </div>
+                <div class="stat-content">
+                    <span class="stat-label">Average Age</span>
+                    <h3 id="avgAge">0</h3>
+                </div>
+            </div>
+        </section>
+
+        <section class="students-list">
+
+    <h2>Student Records</h2>
+     <button class="display-btn" onclick="displayStudents()">
+            <i class="fas fa-eye"></i> Display Students
+     </button>
+    <table id="studentTable">
+
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Age</th>
+                <th>Department</th>
+            </tr>
+        </thead>
+
+        <tbody id="studentTableBody">
+
+        </tbody>
+
+    </table>
+
+</section>
+
+    <!-- Main Content -->
+    <main>
+        <section class="student-form-section">
+
+    <h2>Add Student</h2>
+
+    <form id="studentForm">
+
+        <div>
+            <label>Name</label><br>
+            <input
+                type="text"
+                id="name"
+                placeholder="Enter Name"
+                required
+            >
+        </div>
+
+        <br>
+
+        <div>
+            <label>Age</label><br>
+            <input
+                type="number"
+                id="age"
+                placeholder="Enter Age"
+                required
+            >
+        </div>
+
+        <br>
+
+        <div>
+            <label>Department</label><br>
+            <input
+                type="text"
+                id="department"
+                placeholder="Enter Department"
+                required
+            >
+        </div>
+
+        <br>
+
+        <button type="submit">
+            Submit
+        </button>
+
+    </form>
+
+    <br>
+
+    <div id="result"></div>
+
+</section>
+
+<section class="students-list">
+
+    <div class="table-header">
+
+        <h2>Session Records</h2>
+
+        <button class="display-btn" onclick="displaySessionStudents()">
+            <i class="fas fa-eye"></i> Display Session Records
+        </button>
+
+    </div>
+
+    <table>
+
+        <thead>
+
+            <tr>
+
+                <th>ID</th>
+                <th>Name</th>
+                <th>Age</th>
+                <th>Department</th>
+
+            </tr>
+
+        </thead>
+
+        <tbody id="sessionTableBody">
+
+        </tbody>
+
+    </table>
+
+</section>
+
+<script>
+    const form = document.getElementById("studentForm");
+
+// Load students from Local Storage
+let students = JSON.parse(localStorage.getItem("students")) || [];
+
+// Update Dashboard Stats
+function updateStats() {
+
+    document.getElementById("totalStudents").textContent = students.length;
+
+    // Unique Departments
+    const departments = [...new Set(students.map(student => student.department))];
+
+    document.getElementById("totalDepts").textContent = departments.length;
+
+    // Average Age
+    if (students.length > 0) {
+
+        const totalAge = students.reduce((sum, student) => sum + student.age, 0);
+
+        const averageAge = (totalAge / students.length).toFixed(1);
+
+        document.getElementById("avgAge").textContent = averageAge;
+
+    } else {
+
+        document.getElementById("avgAge").textContent = 0;
+
+    }
+
+}
+
+// Load stats when page opens
+updateStats();
+
+function getStudentsFromLocalStorage() {
+
+    return new Promise((resolve, reject) => {
+
+        const students = JSON.parse(localStorage.getItem("students")) || [];
+
+        if (students) {
+            resolve(students);
+        } else {
+            reject("No students found.");
+        }
+
+    });
+
+}
+
+function displayStudents() {
+
+    const tableBody = document.getElementById("studentTableBody");
+
+    tableBody.innerHTML = "";
+
+    getStudentsFromLocalStorage()
+
+        .then(function(students) {
+
+            students.forEach(function(student) {
+
+                tableBody.innerHTML += `
+                    <tr>
+                        <td>${student.id}</td>
+                        <td>${student.name}</td>
+                        <td>${student.age}</td>
+                        <td>${student.department}</td>
+                    </tr>
+                `;
+
+            });
+
+        })
+
+        .catch(function(error) {
+
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="4">${error}</td>
+                </tr>
+            `;
+
+        });
+
+}
+
+function displaySessionStudents(){
+
+    const tableBody =
+        document.getElementById("sessionTableBody");
+
+    tableBody.innerHTML = "";
+
+    const sessionStudents =
+        JSON.parse(sessionStorage.getItem("sessionStudents")) || [];
+
+    sessionStudents.forEach(student=>{
+
+        tableBody.innerHTML += `
+
+        <tr>
+
+            <td>${student.id}</td>
+
+            <td>${student.name}</td>
+
+            <td>${student.age}</td>
+
+            <td>${student.department}</td>
+
+        </tr>
+
+        `;
+
+    });
+
+}
+
+form.addEventListener("submit", async function (e) {
+
+    e.preventDefault();
+
+    const student = {
+
+        name: document.getElementById("name").value,
+
+        data: {
+            age: Number(document.getElementById("age").value),
+            department: document.getElementById("department").value
+        }
+
+    };
+
+    try {
+
+        const response = await fetch("https://jjjjjjjjjjjjs", {
+
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify(student)
+
+        });
+
+        const result = await response.json();
+
+        console.log(result);
+
+
+students.push({
+
+    id: result.id,
+
+    name: student.name,
+
+    age: student.data.age,
+
+    department: student.data.department
+
+});
+
+localStorage.setItem("students", JSON.stringify(students));
+
+// SESSION STORAGE
+
+let sessionStudents =
+    JSON.parse(sessionStorage.getItem("sessionStudents")) || [];
+
+sessionStudents.push({
+
+    id: result.id,
+
+    name: student.name,
+
+    age: student.data.age,
+
+    department: student.data.department
+
+});
+
+sessionStorage.setItem(
+    "sessionStudents",
+    JSON.stringify(sessionStudents)
+);
+
+        document.getElementById("result").innerHTML = `
+            <h3>Student Added Successfully!</h3>
+            <p><strong>ID:</strong> ${result.id}</p>
+            <p><strong>Name:</strong> ${result.name}</p>
+            <p><strong>Age:</strong> ${result.data.age}</p>
+            <p><strong>Department:</strong> ${result.data.department}</p>
+        `;
+
+        form.reset();
+
+    }
+    catch (error) {
+
+        console.error(error);
+
+        document.getElementById("result").innerHTML =
+            "<h3>Something went wrong!</h3>";
+
+    }
+
+});
+</script>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p> </p>
+    </footer>
+
+    <!-- JavaScript File -->
+    <script src="script.js"></script>
+
+</body>
+</html>
