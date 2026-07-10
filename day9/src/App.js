@@ -5,8 +5,11 @@ import { Button, Space } from "antd";
 import Page1 from "./pages/page1";
 import Page2 from "./pages/page2";
 import Page3 from "./pages/page3";
+import { useSelector, useDispatch } from "react-redux";
+import { addPage1Name } from "./feautures/nameSlice";
 
 function App() {
+  const dispatch = useDispatch();
   return (
     <BrowserRouter>
 
@@ -15,7 +18,8 @@ function App() {
         <Space>
 
           <Link to="/">
-            <Button type="primary">Page 1</Button>
+            <Button onclick={dispatch(addPage1Name("atheesh"))}  type="primary">Page 1</Button>
+            
           </Link>
 
           <Link to="/page2">
